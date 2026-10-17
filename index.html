@@ -1692,36 +1692,45 @@
 
         // --- SISTEMA MULTIPROXY RESILIENTE DE ALTA VELOCIDAD ---
         async function fetchWithProxy(targetUrl) {
-            // 1. Intentar con CorsProxy.io (Excelente para JSONs pesados de IPTV)
-            try {
-                const proxy1 = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
-                const res1 = await fetch(proxy1);
-                if (res1.ok) {
-                    const data = await res1.json();
-                    if (data && (Array.isArray(data) ? data.length > 0 : true)) return data;
+            // 1. CodeTabs (Excelente para saltar bloqueos estrictos)
+            // 2. AllOrigins
+            // 3. CorsProxy
+            const proxies = [
+                `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(targetUrl)}`,
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
+                `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`
+            ];
+
+            for (let i = 0; i < proxies.length; i++) {
+                try {
+                    console.log("Intentando conexión " + (i+1) + "...");
+                    const res = await fetch(proxies[i]);
+                    if (res.ok) {
+                        const text = await res.text();
+                        try {
+                            const data = JSON.parse(text);
+                            // Validar que realmente recibimos el JSON del panel Xtream
+                            if (data && typeof data === 'object') return data;
+                        } catch (e) {
+                            console.warn("Proxy devolvió HTML. El panel IPTV podría estar bloqueando el acceso.");
+                        }
+                    }
+                } catch (e) {
+                    console.warn("Proxy falló por timeout o red.");
                 }
-            } catch (e) {
-                console.warn("Proxy 1 (CorsProxy) falló:", e);
             }
 
-            // 2. Intentar con AllOrigins como respaldo
+            // Intento final de forma directa
             try {
-                const proxy2 = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
-                const res2 = await fetch(proxy2);
-                if (res2.ok) {
-                    const data = await res2.json();
-                    if (data) return data;
+                const resDirect = await fetch(targetUrl);
+                if (resDirect.ok) {
+                    const textDirect = await resDirect.text();
+                    return JSON.parse(textDirect);
                 }
-            } catch (e) {
-                console.warn("Proxy 2 (AllOrigins) falló:", e);
-            }
-
-            // 3. Petición directa si el servidor de origen soporta HTTPS/CORS
-            try {
-                const res3 = await fetch(targetUrl);
-                if (res3.ok) return await res3.json();
             } catch (e) {}
 
+            // Alerta visible para el usuario si todo falla
+            alert("🚨 ERROR DE CONEXIÓN: El panel Xtream está bloqueando la conexión web (probablemente tiene bloqueo de VPN activado) o el servidor IPTV está caído.");
             return [];
         }
 
@@ -3137,4 +3146,3 @@
     </script>
 </body>
 </html>
-
