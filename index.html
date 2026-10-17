@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -2420,14 +2421,18 @@
             p = password;
 
             try {
+                // --- PUENTE CORS IMPLEMENTADO AQUÍ ---
+                const getProxy = (action) => `https://api.allorigins.win/raw?url=${encodeURIComponent(`${host}/player_api.php?username=${u}&password=${p}&action=${action}`)}`;
+
                 const [liveCatRes, liveStreamRes, vodCatRes, vodStreamRes, seriesCatRes, seriesStreamRes] = await Promise.allSettled([
-                    fetch(`${host}/player_api.php?username=${u}&password=${p}&action=get_live_categories`).then(r => r.json()),
-                    fetch(`${host}/player_api.php?username=${u}&password=${p}&action=get_live_streams`).then(r => r.json()),
-                    fetch(`${host}/player_api.php?username=${u}&password=${p}&action=get_vod_categories`).then(r => r.json()),
-                    fetch(`${host}/player_api.php?username=${u}&password=${p}&action=get_vod_streams`).then(r => r.json()),
-                    fetch(`${host}/player_api.php?username=${u}&password=${p}&action=get_series_categories`).then(r => r.json()),
-                    fetch(`${host}/player_api.php?username=${u}&password=${p}&action=get_series`).then(r => r.json())
+                    fetch(getProxy('get_live_categories')).then(r => r.json()),
+                    fetch(getProxy('get_live_streams')).then(r => r.json()),
+                    fetch(getProxy('get_vod_categories')).then(r => r.json()),
+                    fetch(getProxy('get_vod_streams')).then(r => r.json()),
+                    fetch(getProxy('get_series_categories')).then(r => r.json()),
+                    fetch(getProxy('get_series')).then(r => r.json())
                 ]);
+                // --------------------------------------
 
                 liveCategories = (liveCatRes.status === 'fulfilled' && Array.isArray(liveCatRes.value)) ? liveCatRes.value : [];
                 const liveStreams = (liveStreamRes.status === 'fulfilled' && Array.isArray(liveStreamRes.value)) ? liveStreamRes.value : [];
@@ -2441,8 +2446,8 @@
                     stream_icon: 'https://img.youtube.com/vi/WXF8eeNa9qw/hqdefault.jpg',
                     category_id: 'lmp_custom_folder',
                     stream_id: 'yt_lmp_1',
-                    is_iframe: true, // Parámetro para desencadenar el modal web en playContent()
-                    direct_url: 'https://www.youtube.com/live/GjNb2haRkjk?si=hWVJ98DD__F-Eo7r?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3' // Player sin cookies ni extras visuales
+                    is_iframe: true, 
+                    direct_url: 'https://www.youtube.com/live/GjNb2haRkjk?si=hWVJ98DD__F-Eo7r?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3'
                 });
                 // ------------------------------------------
 
@@ -2866,7 +2871,12 @@
             tabsContainer.innerHTML = '';
 
             try {
-                const res = await fetch(`${host}/player_api.php?username=${u}&password=${p}&action=get_series_info&series_id=${seriesId}`);
+                // --- PUENTE CORS IMPLEMENTADO AQUÍ ---
+                const targetUrl = `${host}/player_api.php?username=${u}&password=${p}&action=get_series_info&series_id=${seriesId}`;
+                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
+                const res = await fetch(proxyUrl);
+                // -------------------------------------
+                
                 if (!res.ok) throw new Error("HTTP " + res.status);
                 
                 const data = await res.json();
