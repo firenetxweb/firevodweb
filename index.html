@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -83,7 +82,7 @@
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--scarlet-neon); }
 
-        /* Estilo burbuja para los contadores en los botones de TV, TV firevod, TV premium, Películas y Series */
+        /* Estilo burbuja para los contadores */
         .badge-bubble {
             background: rgba(255, 36, 0, 0.85);
             color: #fff;
@@ -498,7 +497,6 @@
             .hero-buttons-container button { flex: 1; }
         }
 
-        /* --- TARJETAS MÁS GRANDES EN LA SECCIÓN DE INICIO (HERO-NAV-MENU) --- */
         .hero-nav-menu {
             display: grid !important;
             grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)) !important;
@@ -554,7 +552,6 @@
             color: #fff !important;
         }
 
-        /* Icono de fondo (Marca de agua grande) dentro de cada tarjeta del menú de inicio */
         .hero-nav-menu .nav-link i.neon-icon,
         .hero-nav-menu .search-icon-btn i {
             position: absolute !important;
@@ -577,7 +574,6 @@
             transform: scale(1.12) !important;
         }
 
-        /* Garantizar que el texto y los badges se mantengan por encima del icono de fondo */
         .hero-nav-menu .nav-link span,
         .hero-nav-menu .search-icon-btn i.fa-search {
             position: relative !important;
@@ -588,7 +584,6 @@
             font-size: 20px !important;
             margin-bottom: 4px !important;
         }
-        /* ------------------------------------------------------------- */
 
         .btn-netflix-play-mini {
             background: #ffffff !important; color: #000 !important; border: 2px solid #ffffff !important; 
@@ -794,13 +789,9 @@
             background-size: 100% 100%; 
             background-position: center center; 
             position: absolute; 
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             border-radius: 0; 
-            display: flex;
-            align-items: flex-end;
+            display: flex; align-items: flex-end;
             padding: 0 4% 80px 4%;
             z-index: 1;
         }
@@ -1456,12 +1447,9 @@
         </div>
     </div>
 
-    <!-- Modal nativo sin interrupciones para reproducir Enlaces tipo IFRAME -->
     <div id="iframe-modal" class="modal-overlay" style="z-index: 200005; display: none;" onclick="closeIframeModal()">
         <div class="modal-content" style="height: 100vh; width: 100vw; background: #000; display: flex; flex-direction: column; max-width: 100%; padding: 0; border-radius: 0;" onclick="event.stopPropagation()">
-            <!-- SE AÑADIÓ: id="iframe-top-bar" y transición de opacidad -->
             <div id="iframe-top-bar" style="padding: 20px; background: rgba(0,0,0,0.8); text-align: left; display: flex; justify-content: space-between; align-items: center; position: absolute; top: 0; left: 0; right: 0; z-index: 10; transition: opacity 0.5s ease;">
-                <!-- SE AÑADIÓ: id="btn-close-iframe" -->
                 <button id="btn-close-iframe" class="nav-item btn-netflix-back" onclick="closeIframeModal()" style="display: inline-flex; width: auto; margin: 0; transition: all 0.3s ease;"><i class="fas fa-arrow-left"></i> Cerrar Reproductor</button>
             </div>
             <div id="iframe-container" style="flex: 1; width: 100%; height: 100%; background: #000;"></div>
@@ -1515,14 +1503,12 @@
             }
         }, true);
 
-        /* MOTOR DE NAVEGACIÓN D-PAD ESTABILIZADO (TRAMPA DE FOCOS Y FILTRO DE DIRECCIONES) */
+        /* MOTOR DE NAVEGACIÓN D-PAD ESTABILIZADO */
         document.addEventListener('keydown', function(e) {
-            // ---> AÑADIDO: Lógica para volver a mostrar el botón al presionar cualquier tecla <---
             const iframeModal = document.getElementById('iframe-modal');
             if (iframeModal && window.getComputedStyle(iframeModal).display !== 'none') {
                 showIframeUI();
             }
-            // -----------------------------------------------------------------------------------
 
             const keyMap = { 37: 'left', 38: 'up', 39: 'right', 40: 'down', 13: 'enter' };
             const dir = keyMap[e.keyCode];
@@ -1564,7 +1550,7 @@
             const modalLayers = [
                 'admin-panel',
                 'exit-dialog',
-                'iframe-modal', // Inyección TV Iframe modal
+                'iframe-modal',
                 'player-install-modal',
                 'modal-synopsis',
                 'login-container',
@@ -1643,13 +1629,8 @@
                 }
 
                 if (valid) {
-                    // TRAMPA PARA FOCOS DE PAD: Evita disparos laterales desproporcionados al pulsar arriba o abajo
-                    if ((dir === 'up' || dir === 'down') && secondaryDist > primaryDist * 1.5 && primaryDist < 40) {
-                        return;
-                    }
-                    if ((dir === 'left' || dir === 'right') && secondaryDist > primaryDist * 2.5) {
-                        return;
-                    }
+                    if ((dir === 'up' || dir === 'down') && secondaryDist > primaryDist * 1.5 && primaryDist < 40) return;
+                    if ((dir === 'left' || dir === 'right') && secondaryDist > primaryDist * 2.5) return;
 
                     let score = primaryDist + (secondaryDist * 2.5);
 
@@ -1657,15 +1638,9 @@
                     const itemRowCont = item.closest('.row-container');
                     const itemCatGrid = item.closest('.category-grid');
 
-                    if (currentHeroMenu && itemHeroMenu && currentHeroMenu === itemHeroMenu) {
-                        score *= 0.4;
-                    }
-                    if (currentRowCont && itemRowCont && currentRowCont === itemRowCont && (dir === 'left' || dir === 'right')) {
-                        score = primaryDist + (secondaryDist * 0.3);
-                    }
-                    if (currentCatGrid && itemCatGrid && currentCatGrid === itemCatGrid) {
-                        score *= 0.5;
-                    }
+                    if (currentHeroMenu && itemHeroMenu && currentHeroMenu === itemHeroMenu) score *= 0.4;
+                    if (currentRowCont && itemRowCont && currentRowCont === itemRowCont && (dir === 'left' || dir === 'right')) score = primaryDist + (secondaryDist * 0.3);
+                    if (currentCatGrid && itemCatGrid && currentCatGrid === itemCatGrid) score *= 0.5;
 
                     if (score < minDistance) {
                         minDistance = score;
@@ -1678,7 +1653,7 @@
                 bestItem.focus();
                 bestItem.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
             }
-        }, true); // Capturar fase true para detectar siempre antes que otros elementos
+        }, true);
 
         const FALLBACK_LOGO = 'https://i.ibb.co/pvy9nBkV/10ed6469-a30b-4c95-b642-d254c313f63e.png';
         const TMDB_API_KEY = '61113334178b7302314481eedcd6630f';
@@ -1705,7 +1680,6 @@
         let activeItemPlaying = null;
         let activeTypePlaying = "";
         
-        // --- AÑADIDO: Variable para el control del temporizador de cierre (Ocultar Barra) ---
         let iframeUITimeout = null; 
 
         const ITEMS_PER_PAGE = 100;
@@ -1715,6 +1689,41 @@
         let homeCarouselItems = [];
         let currentCarouselIndex = 0;
         let trialTimerInterval = null;
+
+        // --- SISTEMA MULTIPROXY RESILIENTE DE ALTA VELOCIDAD ---
+        async function fetchWithProxy(targetUrl) {
+            // 1. Intentar con CorsProxy.io (Excelente para JSONs pesados de IPTV)
+            try {
+                const proxy1 = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
+                const res1 = await fetch(proxy1);
+                if (res1.ok) {
+                    const data = await res1.json();
+                    if (data && (Array.isArray(data) ? data.length > 0 : true)) return data;
+                }
+            } catch (e) {
+                console.warn("Proxy 1 (CorsProxy) falló:", e);
+            }
+
+            // 2. Intentar con AllOrigins como respaldo
+            try {
+                const proxy2 = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
+                const res2 = await fetch(proxy2);
+                if (res2.ok) {
+                    const data = await res2.json();
+                    if (data) return data;
+                }
+            } catch (e) {
+                console.warn("Proxy 2 (AllOrigins) falló:", e);
+            }
+
+            // 3. Petición directa si el servidor de origen soporta HTTPS/CORS
+            try {
+                const res3 = await fetch(targetUrl);
+                if (res3.ok) return await res3.json();
+            } catch (e) {}
+
+            return [];
+        }
 
         function updateUserProfileDisplay(userData) {
             const nameEl = document.getElementById('user-name-display');
@@ -2028,7 +2037,6 @@
             if (lastFocus) { setTimeout(() => { lastFocus.focus(); }, 150); }
         }
 
-        // --- AÑADIDO: Lógica para mostrar, ocultar a los 5s y focusear en automático el botón de cierre del Iframe ---
         function showIframeUI() {
             const topBar = document.getElementById('iframe-top-bar');
             const btnClose = document.getElementById('btn-close-iframe');
@@ -2038,7 +2046,7 @@
                 topBar.style.pointerEvents = 'auto';
             }
             if (btnClose) {
-                btnClose.focus(); // El foco brilla en el botón al presionar una tecla o abrir el iframe
+                btnClose.focus();
             }
             
             clearTimeout(iframeUITimeout);
@@ -2047,26 +2055,24 @@
                     topBar.style.opacity = '0';
                     topBar.style.pointerEvents = 'none';
                 }
-            }, 5000); // Se esconde a los 5 segundos
+            }, 5000);
         }
 
-        // FUNCIONES DE REPRODUCTOR IFRAME
         function openIframeModal(url) {
             const container = document.getElementById('iframe-container');
             container.innerHTML = `<iframe src="${url}" width="100%" height="100%" frameborder="0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen style="width: 100%; height: 100%; border: none;"></iframe>`;
             document.getElementById('iframe-modal').style.display = 'flex';
-            showIframeUI(); // <-- Llama la función para mostrar la UI, enfocar botón y ocultar a los 5s
+            showIframeUI();
         }
 
         function closeIframeModal() {
             clearTimeout(iframeUITimeout);
             document.getElementById('iframe-modal').style.display = 'none';
-            document.getElementById('iframe-container').innerHTML = ''; // Detiene la reproducción
+            document.getElementById('iframe-container').innerHTML = '';
             if (lastFocus) { setTimeout(() => { lastFocus.focus(); }, 150); }
         }
 
         function playContent(item, type, ep = null) {
-            // SI ES UN IFRAME PERSONALIZADO ABRE EL MODAL WEB
             if (item && item.is_iframe) {
                 lastFocus = document.activeElement;
                 openIframeModal(item.direct_url);
@@ -2421,23 +2427,25 @@
             p = password;
 
             try {
-                // --- PUENTE CORS IMPLEMENTADO AQUÍ ---
-                const getProxy = (action) => `https://api.allorigins.win/raw?url=${encodeURIComponent(`${host}/player_api.php?username=${u}&password=${p}&action=${action}`)}`;
+                const urlLiveCat = `${host}/player_api.php?username=${u}&password=${p}&action=get_live_categories`;
+                const urlLiveStream = `${host}/player_api.php?username=${u}&password=${p}&action=get_live_streams`;
+                const urlVodCat = `${host}/player_api.php?username=${u}&password=${p}&action=get_vod_categories`;
+                const urlVodStream = `${host}/player_api.php?username=${u}&password=${p}&action=get_vod_streams`;
+                const urlSeriesCat = `${host}/player_api.php?username=${u}&password=${p}&action=get_series_categories`;
+                const urlSeriesStream = `${host}/player_api.php?username=${u}&password=${p}&action=get_series`;
 
                 const [liveCatRes, liveStreamRes, vodCatRes, vodStreamRes, seriesCatRes, seriesStreamRes] = await Promise.allSettled([
-                    fetch(getProxy('get_live_categories')).then(r => r.json()),
-                    fetch(getProxy('get_live_streams')).then(r => r.json()),
-                    fetch(getProxy('get_vod_categories')).then(r => r.json()),
-                    fetch(getProxy('get_vod_streams')).then(r => r.json()),
-                    fetch(getProxy('get_series_categories')).then(r => r.json()),
-                    fetch(getProxy('get_series')).then(r => r.json())
+                    fetchWithProxy(urlLiveCat),
+                    fetchWithProxy(urlLiveStream),
+                    fetchWithProxy(urlVodCat),
+                    fetchWithProxy(urlVodStream),
+                    fetchWithProxy(urlSeriesCat),
+                    fetchWithProxy(urlSeriesStream)
                 ]);
-                // --------------------------------------
 
                 liveCategories = (liveCatRes.status === 'fulfilled' && Array.isArray(liveCatRes.value)) ? liveCatRes.value : [];
                 const liveStreams = (liveStreamRes.status === 'fulfilled' && Array.isArray(liveStreamRes.value)) ? liveStreamRes.value : [];
 
-                // --- INYECCIÓN SOLICITADA PARA LIGA LMP ---
                 if (!liveCategories.find(c => c.category_id === 'lmp_custom_folder')) {
                     liveCategories.unshift({ category_id: 'lmp_custom_folder', category_name: 'liga LMP ⚾' });
                 }
@@ -2449,7 +2457,6 @@
                     is_iframe: true, 
                     direct_url: 'https://www.youtube.com/live/GjNb2haRkjk?si=hWVJ98DD__F-Eo7r?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3'
                 });
-                // ------------------------------------------
 
                 movieCategories = (vodCatRes.status === 'fulfilled' && Array.isArray(vodCatRes.value)) ? vodCatRes.value : [];
                 const movieStreams = (vodStreamRes.status === 'fulfilled' && Array.isArray(vodStreamRes.value)) ? vodStreamRes.value : [];
@@ -2871,15 +2878,8 @@
             tabsContainer.innerHTML = '';
 
             try {
-                // --- PUENTE CORS IMPLEMENTADO AQUÍ ---
                 const targetUrl = `${host}/player_api.php?username=${u}&password=${p}&action=get_series_info&series_id=${seriesId}`;
-                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
-                const res = await fetch(proxyUrl);
-                // -------------------------------------
-                
-                if (!res.ok) throw new Error("HTTP " + res.status);
-                
-                const data = await res.json();
+                const data = await fetchWithProxy(targetUrl);
                 currentSeriesData = data;
 
                 let seasonsObj = {};
@@ -3137,3 +3137,4 @@
     </script>
 </body>
 </html>
+
