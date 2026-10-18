@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TVTRISTAN | Experience</title>
+    <title>firevodweb</title>
     
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -82,7 +82,7 @@
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--scarlet-neon); }
 
-        /* Estilo burbuja para los contadores */
+        /* Estilo burbuja para los contadores en los botones de TV, TV firevod, TV premium, Películas y Series */
         .badge-bubble {
             background: rgba(255, 36, 0, 0.85);
             color: #fff;
@@ -497,6 +497,7 @@
             .hero-buttons-container button { flex: 1; }
         }
 
+        /* --- TARJETAS MÁS GRANDES EN LA SECCIÓN DE INICIO (HERO-NAV-MENU) --- */
         .hero-nav-menu {
             display: grid !important;
             grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)) !important;
@@ -552,6 +553,7 @@
             color: #fff !important;
         }
 
+        /* Icono de fondo (Marca de agua grande) dentro de cada tarjeta del menú de inicio */
         .hero-nav-menu .nav-link i.neon-icon,
         .hero-nav-menu .search-icon-btn i {
             position: absolute !important;
@@ -574,6 +576,7 @@
             transform: scale(1.12) !important;
         }
 
+        /* Garantizar que el texto y los badges se mantengan por encima del icono de fondo */
         .hero-nav-menu .nav-link span,
         .hero-nav-menu .search-icon-btn i.fa-search {
             position: relative !important;
@@ -584,6 +587,7 @@
             font-size: 20px !important;
             margin-bottom: 4px !important;
         }
+        /* ------------------------------------------------------------- */
 
         .btn-netflix-play-mini {
             background: #ffffff !important; color: #000 !important; border: 2px solid #ffffff !important; 
@@ -789,9 +793,13 @@
             background-size: 100% 100%; 
             background-position: center center; 
             position: absolute; 
-            top: 0; left: 0; right: 0; bottom: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             border-radius: 0; 
-            display: flex; align-items: flex-end;
+            display: flex;
+            align-items: flex-end;
             padding: 0 4% 80px 4%;
             z-index: 1;
         }
@@ -1447,9 +1455,12 @@
         </div>
     </div>
 
+    <!-- Modal nativo sin interrupciones para reproducir Enlaces tipo IFRAME -->
     <div id="iframe-modal" class="modal-overlay" style="z-index: 200005; display: none;" onclick="closeIframeModal()">
         <div class="modal-content" style="height: 100vh; width: 100vw; background: #000; display: flex; flex-direction: column; max-width: 100%; padding: 0; border-radius: 0;" onclick="event.stopPropagation()">
+            <!-- SE AÑADIÓ: id="iframe-top-bar" y transición de opacidad -->
             <div id="iframe-top-bar" style="padding: 20px; background: rgba(0,0,0,0.8); text-align: left; display: flex; justify-content: space-between; align-items: center; position: absolute; top: 0; left: 0; right: 0; z-index: 10; transition: opacity 0.5s ease;">
+                <!-- SE AÑADIÓ: id="btn-close-iframe" -->
                 <button id="btn-close-iframe" class="nav-item btn-netflix-back" onclick="closeIframeModal()" style="display: inline-flex; width: auto; margin: 0; transition: all 0.3s ease;"><i class="fas fa-arrow-left"></i> Cerrar Reproductor</button>
             </div>
             <div id="iframe-container" style="flex: 1; width: 100%; height: 100%; background: #000;"></div>
@@ -1503,12 +1514,14 @@
             }
         }, true);
 
-        /* MOTOR DE NAVEGACIÓN D-PAD ESTABILIZADO */
+        /* MOTOR DE NAVEGACIÓN D-PAD ESTABILIZADO (TRAMPA DE FOCOS Y FILTRO DE DIRECCIONES) */
         document.addEventListener('keydown', function(e) {
+            // ---> AÑADIDO: Lógica para volver a mostrar el botón al presionar cualquier tecla <---
             const iframeModal = document.getElementById('iframe-modal');
             if (iframeModal && window.getComputedStyle(iframeModal).display !== 'none') {
                 showIframeUI();
             }
+            // -----------------------------------------------------------------------------------
 
             const keyMap = { 37: 'left', 38: 'up', 39: 'right', 40: 'down', 13: 'enter' };
             const dir = keyMap[e.keyCode];
@@ -1550,7 +1563,7 @@
             const modalLayers = [
                 'admin-panel',
                 'exit-dialog',
-                'iframe-modal',
+                'iframe-modal', // Inyección TV Iframe modal
                 'player-install-modal',
                 'modal-synopsis',
                 'login-container',
@@ -1629,8 +1642,13 @@
                 }
 
                 if (valid) {
-                    if ((dir === 'up' || dir === 'down') && secondaryDist > primaryDist * 1.5 && primaryDist < 40) return;
-                    if ((dir === 'left' || dir === 'right') && secondaryDist > primaryDist * 2.5) return;
+                    // TRAMPA PARA FOCOS DE PAD: Evita disparos laterales desproporcionados al pulsar arriba o abajo
+                    if ((dir === 'up' || dir === 'down') && secondaryDist > primaryDist * 1.5 && primaryDist < 40) {
+                        return;
+                    }
+                    if ((dir === 'left' || dir === 'right') && secondaryDist > primaryDist * 2.5) {
+                        return;
+                    }
 
                     let score = primaryDist + (secondaryDist * 2.5);
 
@@ -1638,9 +1656,15 @@
                     const itemRowCont = item.closest('.row-container');
                     const itemCatGrid = item.closest('.category-grid');
 
-                    if (currentHeroMenu && itemHeroMenu && currentHeroMenu === itemHeroMenu) score *= 0.4;
-                    if (currentRowCont && itemRowCont && currentRowCont === itemRowCont && (dir === 'left' || dir === 'right')) score = primaryDist + (secondaryDist * 0.3);
-                    if (currentCatGrid && itemCatGrid && currentCatGrid === itemCatGrid) score *= 0.5;
+                    if (currentHeroMenu && itemHeroMenu && currentHeroMenu === itemHeroMenu) {
+                        score *= 0.4;
+                    }
+                    if (currentRowCont && itemRowCont && currentRowCont === itemRowCont && (dir === 'left' || dir === 'right')) {
+                        score = primaryDist + (secondaryDist * 0.3);
+                    }
+                    if (currentCatGrid && itemCatGrid && currentCatGrid === itemCatGrid) {
+                        score *= 0.5;
+                    }
 
                     if (score < minDistance) {
                         minDistance = score;
@@ -1653,7 +1677,7 @@
                 bestItem.focus();
                 bestItem.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
             }
-        }, true);
+        }, true); // Capturar fase true para detectar siempre antes que otros elementos
 
         const FALLBACK_LOGO = 'https://i.ibb.co/pvy9nBkV/10ed6469-a30b-4c95-b642-d254c313f63e.png';
         const TMDB_API_KEY = '61113334178b7302314481eedcd6630f';
@@ -1680,6 +1704,7 @@
         let activeItemPlaying = null;
         let activeTypePlaying = "";
         
+        // --- AÑADIDO: Variable para el control del temporizador de cierre (Ocultar Barra) ---
         let iframeUITimeout = null; 
 
         const ITEMS_PER_PAGE = 100;
@@ -1689,50 +1714,6 @@
         let homeCarouselItems = [];
         let currentCarouselIndex = 0;
         let trialTimerInterval = null;
-
-        // --- SISTEMA MULTIPROXY RESILIENTE DE ALTA VELOCIDAD ---
-        async function fetchWithProxy(targetUrl) {
-            // 1. CodeTabs (Excelente para saltar bloqueos estrictos)
-            // 2. AllOrigins
-            // 3. CorsProxy
-            const proxies = [
-                `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(targetUrl)}`,
-                `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
-                `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`
-            ];
-
-            for (let i = 0; i < proxies.length; i++) {
-                try {
-                    console.log("Intentando conexión " + (i+1) + "...");
-                    const res = await fetch(proxies[i]);
-                    if (res.ok) {
-                        const text = await res.text();
-                        try {
-                            const data = JSON.parse(text);
-                            // Validar que realmente recibimos el JSON del panel Xtream
-                            if (data && typeof data === 'object') return data;
-                        } catch (e) {
-                            console.warn("Proxy devolvió HTML. El panel IPTV podría estar bloqueando el acceso.");
-                        }
-                    }
-                } catch (e) {
-                    console.warn("Proxy falló por timeout o red.");
-                }
-            }
-
-            // Intento final de forma directa
-            try {
-                const resDirect = await fetch(targetUrl);
-                if (resDirect.ok) {
-                    const textDirect = await resDirect.text();
-                    return JSON.parse(textDirect);
-                }
-            } catch (e) {}
-
-            // Alerta visible para el usuario si todo falla
-            alert("🚨 ERROR DE CONEXIÓN: El panel Xtream está bloqueando la conexión web (probablemente tiene bloqueo de VPN activado) o el servidor IPTV está caído.");
-            return [];
-        }
 
         function updateUserProfileDisplay(userData) {
             const nameEl = document.getElementById('user-name-display');
@@ -2046,6 +2027,7 @@
             if (lastFocus) { setTimeout(() => { lastFocus.focus(); }, 150); }
         }
 
+        // --- AÑADIDO: Lógica para mostrar, ocultar a los 5s y focusear en automático el botón de cierre del Iframe ---
         function showIframeUI() {
             const topBar = document.getElementById('iframe-top-bar');
             const btnClose = document.getElementById('btn-close-iframe');
@@ -2055,7 +2037,7 @@
                 topBar.style.pointerEvents = 'auto';
             }
             if (btnClose) {
-                btnClose.focus();
+                btnClose.focus(); // El foco brilla en el botón al presionar una tecla o abrir el iframe
             }
             
             clearTimeout(iframeUITimeout);
@@ -2064,24 +2046,26 @@
                     topBar.style.opacity = '0';
                     topBar.style.pointerEvents = 'none';
                 }
-            }, 5000);
+            }, 5000); // Se esconde a los 5 segundos
         }
 
+        // FUNCIONES DE REPRODUCTOR IFRAME
         function openIframeModal(url) {
             const container = document.getElementById('iframe-container');
             container.innerHTML = `<iframe src="${url}" width="100%" height="100%" frameborder="0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen style="width: 100%; height: 100%; border: none;"></iframe>`;
             document.getElementById('iframe-modal').style.display = 'flex';
-            showIframeUI();
+            showIframeUI(); // <-- Llama la función para mostrar la UI, enfocar botón y ocultar a los 5s
         }
 
         function closeIframeModal() {
             clearTimeout(iframeUITimeout);
             document.getElementById('iframe-modal').style.display = 'none';
-            document.getElementById('iframe-container').innerHTML = '';
+            document.getElementById('iframe-container').innerHTML = ''; // Detiene la reproducción
             if (lastFocus) { setTimeout(() => { lastFocus.focus(); }, 150); }
         }
 
         function playContent(item, type, ep = null) {
+            // SI ES UN IFRAME PERSONALIZADO ABRE EL MODAL WEB
             if (item && item.is_iframe) {
                 lastFocus = document.activeElement;
                 openIframeModal(item.direct_url);
@@ -2436,25 +2420,19 @@
             p = password;
 
             try {
-                const urlLiveCat = `${host}/player_api.php?username=${u}&password=${p}&action=get_live_categories`;
-                const urlLiveStream = `${host}/player_api.php?username=${u}&password=${p}&action=get_live_streams`;
-                const urlVodCat = `${host}/player_api.php?username=${u}&password=${p}&action=get_vod_categories`;
-                const urlVodStream = `${host}/player_api.php?username=${u}&password=${p}&action=get_vod_streams`;
-                const urlSeriesCat = `${host}/player_api.php?username=${u}&password=${p}&action=get_series_categories`;
-                const urlSeriesStream = `${host}/player_api.php?username=${u}&password=${p}&action=get_series`;
-
                 const [liveCatRes, liveStreamRes, vodCatRes, vodStreamRes, seriesCatRes, seriesStreamRes] = await Promise.allSettled([
-                    fetchWithProxy(urlLiveCat),
-                    fetchWithProxy(urlLiveStream),
-                    fetchWithProxy(urlVodCat),
-                    fetchWithProxy(urlVodStream),
-                    fetchWithProxy(urlSeriesCat),
-                    fetchWithProxy(urlSeriesStream)
+                    fetch(`${host}/player_api.php?username=${u}&password=${p}&action=get_live_categories`).then(r => r.json()),
+                    fetch(`${host}/player_api.php?username=${u}&password=${p}&action=get_live_streams`).then(r => r.json()),
+                    fetch(`${host}/player_api.php?username=${u}&password=${p}&action=get_vod_categories`).then(r => r.json()),
+                    fetch(`${host}/player_api.php?username=${u}&password=${p}&action=get_vod_streams`).then(r => r.json()),
+                    fetch(`${host}/player_api.php?username=${u}&password=${p}&action=get_series_categories`).then(r => r.json()),
+                    fetch(`${host}/player_api.php?username=${u}&password=${p}&action=get_series`).then(r => r.json())
                 ]);
 
                 liveCategories = (liveCatRes.status === 'fulfilled' && Array.isArray(liveCatRes.value)) ? liveCatRes.value : [];
                 const liveStreams = (liveStreamRes.status === 'fulfilled' && Array.isArray(liveStreamRes.value)) ? liveStreamRes.value : [];
 
+                // --- INYECCIÓN SOLICITADA PARA LIGA LMP ---
                 if (!liveCategories.find(c => c.category_id === 'lmp_custom_folder')) {
                     liveCategories.unshift({ category_id: 'lmp_custom_folder', category_name: 'liga LMP ⚾' });
                 }
@@ -2463,9 +2441,10 @@
                     stream_icon: 'https://img.youtube.com/vi/WXF8eeNa9qw/hqdefault.jpg',
                     category_id: 'lmp_custom_folder',
                     stream_id: 'yt_lmp_1',
-                    is_iframe: true, 
-                    direct_url: 'https://www.youtube.com/live/GjNb2haRkjk?si=hWVJ98DD__F-Eo7r?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3'
+                    is_iframe: true, // Parámetro para desencadenar el modal web en playContent()
+                    direct_url: 'https://www.youtube.com/live/GjNb2haRkjk?si=hWVJ98DD__F-Eo7r?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3' // Player sin cookies ni extras visuales
                 });
+                // ------------------------------------------
 
                 movieCategories = (vodCatRes.status === 'fulfilled' && Array.isArray(vodCatRes.value)) ? vodCatRes.value : [];
                 const movieStreams = (vodStreamRes.status === 'fulfilled' && Array.isArray(vodStreamRes.value)) ? vodStreamRes.value : [];
@@ -2887,8 +2866,10 @@
             tabsContainer.innerHTML = '';
 
             try {
-                const targetUrl = `${host}/player_api.php?username=${u}&password=${p}&action=get_series_info&series_id=${seriesId}`;
-                const data = await fetchWithProxy(targetUrl);
+                const res = await fetch(`${host}/player_api.php?username=${u}&password=${p}&action=get_series_info&series_id=${seriesId}`);
+                if (!res.ok) throw new Error("HTTP " + res.status);
+                
+                const data = await res.json();
                 currentSeriesData = data;
 
                 let seasonsObj = {};
